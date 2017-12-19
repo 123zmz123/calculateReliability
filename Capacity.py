@@ -27,6 +27,16 @@ class 电容可靠性模型:
     一类陶瓷电容容量系数 = {"小于7.5pF": 0.50, "7.5pF到91pF": 0.75, "91pF到470pF": 1.0, "470pF到2000pF": 1.3,
                             "2000pF到0.0062uF": 1.6, "0.0062uF到0.016uF": 1.9, "0.016uF到0.039uF": 2.2,
                             "大于0.039uF": 2.4}
+    def __解析一类陶瓷电容容量系数(self,电容值):
+        绝对电容值 = self.__解析电容值(电容值)
+        if 绝对电容值 < 7.5:
+            self.电容容量 = "小于7.5pF"
+            self.容量系数 = 0.5
+        elif 绝对电容值>= 7.5 and 绝对电容值 < 91:
+            self.容量系数 = 0.75
+        elif 绝对电容值 >= 91 and 绝对电容值 < 470:
+            self.容量系数 = 1.0
+
 
     二类陶瓷电容环境系数 = {"GB": 1.0, "GMS": 1.2, "GF1": 2.8, "GF2": 4.6, "GM1": 5.1, "GM2": 8.1, "MP": 7.0, "NSB": 4.9,
                             "NS1": 2.9, "NS2": 5.7, "NU": 9.1, "AIF": 7.7, "AUF": 14, "AIC": 6.0, "AUC": 10.2,
@@ -98,6 +108,21 @@ class 电容可靠性模型:
             self.电容类型 = "固体钽电解电容"
         elif re.search("铝",str(电容类型)):
             self.电容类型 = "铝电解电容"
+    def __解析电容值(self,电容值):
+        if re.search("u",str(电容值)) or re.search("U",str(电容值)):
+            电容值解析结果 = int(re.match(r'\d+',电容值).group())* (10**6)
+        elif (re.search("n",str(电容值)) or re.search("N",str(电容值))):
+            电容值解析结果 = int(re.match(r'\d+', 电容值).group()) * (10**3)
+        elif(re.search("p",str(电容值)) or re.search("P",str(电容值))):
+            电容值解析结果 = int(re.match(r'\d+', 电容值).group())
+        else:
+            电容值解析结果 = int(re.match(r'\d+', 电容值).group())*(10**9)
+        return 电容值解析结果
+
+
+
+        pass
+
 
 
 
