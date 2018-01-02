@@ -1,25 +1,24 @@
-import re
-class 电容可靠性模型:
+class Capacitor:
 
-    电容类型 = ""
-    工作温度 = 30
-    环境类型 = "GB"
-    电容容量 = ""
-    def __uF(self,电容值):
-        return 电容值 * (10**6)
-    def __pF(self,电容值):
-        return 电容值
-    def __nF(self,电容值):
-        return 电容值 *(10**3)
-    def __F(self,电容值):
-        return 电容值 *(10**12)
+    Cap_Type = ""
+    Working_temprature = 30
+    Enviroment_Type = "GB"
+    Capacity = ""
+    def __uF(self,cap_value):
+        return cap_value * (10**6)
+    def __pF(self,cap_value):
+        return cap_value
+    def __nF(self,cap_value):
+        return cap_value *(10**3)
+    def __F(self,cap_value):
+        return cap_value *(10**12)
 
-    表面贴片封装系数 = {"一类陶瓷电容_片式": 1.5, "一类陶瓷电容_有引线": 1.0,
-                        "二类陶瓷电容_片式": 1.5, "二类陶瓷电容_有引线": 1.0,
-                        "三类陶瓷电容_片式": 1.5, "三类陶瓷电容_有引线": 1.0,
-                        "固体钽电解电容_片式": 1.2, "固体钽电解电容_有引线": 1.0,
-                        "铝电解电容_片式": 1.2, "铝电解电容_有引线": 1.0,
-                        "薄膜电容_片式": 1.2, "薄膜电容_有引线": 1.0}
+    package_coefficient = {"1st_Class_Ceramic_Chip_capacitors": 1.5, "一类陶瓷电容_有引线": 1.0,
+                        "2nd_Class_Ceramic_Chip_capacitors": 1.5, "二类陶瓷电容_有引线": 1.0,
+                        "3rd_Class_Ceramic_Chip_capacitors": 1.5, "三类陶瓷电容_有引线": 1.0,
+                        "Tantalum_capacitors_Chip": 1.2, "固体钽电解电容_有引线": 1.0,
+                        "Aluminum_capacitors_Chip": 1.2, "铝电解电容_有引线": 1.0,
+                        "Film_capacitors_Chip": 1.2, "薄膜电容_有引线": 1.0}
 
     一类陶瓷电容环境系数 = {"GB": 1.0,"GMS": 1.2, "GF1": 2.4, "GF2": 4.1, "GM1": 4.6, "GM2": 7.6,
                         "MP": 7.0, "NSB": 4.0, "NS1": 2.3, "NS2": 4.7, "NU": 10.2, "AIF": 6.7,
@@ -37,7 +36,7 @@ class 电容可靠性模型:
     def __解析一类陶瓷电容容量系数(self,电容值):
         绝对电容值 = self.__解析电容值(电容值)
         if 绝对电容值 < 7.5:
-            self.电容容量 = "小于7.5pF"
+            self.Capacity = "小于7.5pF"
             self.容量系数 = 0.5
         elif 绝对电容值>= 7.5 and 绝对电容值 < 91:
             self.容量系数 = 0.75
@@ -195,15 +194,15 @@ class 电容可靠性模型:
             self.容量系数 = 3.0
     def _解析电容类型(self,电容类型):
         if re.search("一",str(电容类型)):
-            self.电容类型  = "一类陶瓷电容"
+            self.Cap_Type  = "一类陶瓷电容"
         elif re.search("二",str(电容类型)):
-            self.电容类型 = "二类陶瓷电容"
+            self.Cap_Type = "二类陶瓷电容"
         elif re.search("三",str(电容类型)):
-            self.电容类型 = "三类陶瓷电容"
+            self.Cap_Type = "三类陶瓷电容"
         elif re.search("钽",str(电容类型)):
-            self.电容类型 = "固体钽电解电容"
+            self.Cap_Type = "固体钽电解电容"
         elif re.search("铝",str(电容类型)):
-            self.电容类型 = "铝电解电容"
+            self.Cap_Type = "铝电解电容"
     def __解析电容值(self,电容值):
         if re.search("u",str(电容值)) or re.search("U",str(电容值)):
             电容值解析结果 = int(re.match(r'\d+',电容值).group())* (10**6)
@@ -219,80 +218,72 @@ class 电容可靠性模型:
 
         pass
     def __得到容量系数(self,电容值):
-        if self.电容类型 == "一类陶瓷电容":
+        if self.Cap_Type == "一类陶瓷电容":
             self.__解析一类陶瓷电容容量系数(电容值)
-        elif self.电容类型 =="二类陶瓷电容":
+        elif self.Cap_Type == "二类陶瓷电容":
             self.__解析二类陶瓷电容容量系数(电容值)
-        elif self.电容类型 == "三类陶瓷电容":
+        elif self.Cap_Type == "三类陶瓷电容":
             self.__解析三类陶瓷电容容量系数(电容值)
-        elif self.电容类型 == "固体钽电解电容":
+        elif self.Cap_Type == "固体钽电解电容":
             self.__解析固体钽电解电容容量系数(电容值)
-        elif self.电容类型 == "铝电解电容":
+        elif self.Cap_Type == "铝电解电容":
             self.__解析铝电解电容容量系数(电容值)
 
 
 
 
     def 得到可靠性(self):
-        if self.电容类型 == "":
+        if self.Cap_Type == "":
             print("设备未能正确初始化")
-        elif self.电容类型 == "固体钽电解电容":
-            step1 = self.固体钽电解电容基本失效率[self.工作温度] / 1000000 * \
-                    self.固体钽电解电容环境系数[self.环境类型]
+        elif self.Cap_Type == "固体钽电解电容":
+            step1 = self.固体钽电解电容基本失效率[self.Working_temprature] / 1000000 * \
+                    self.固体钽电解电容环境系数[self.Enviroment_Type]
             step2 = self.固体钽电解电容质量等级["B1"] * \
                     self.容量系数
             step3 = self.固体钽电解电容电阻系数["小于0.2"]* \
-                    self.表面贴片封装系数["固体钽电解电容_有引线"]
+                    self.package_coefficient["Tantalum_capacitors_Chip"]
             step4 = step1 * step2 * step3
 
             return  step4
-        elif self.电容类型 == "一类陶瓷电容":
-            step1 = self.一类陶瓷电容基本失效率[self.工作温度]/1000000 * \
-                    self.一类陶瓷电容环境系数[self.环境类型]
+        elif self.Cap_Type == "一类陶瓷电容":
+            step1 = self.一类陶瓷电容基本失效率[self.Working_temprature] / 1000000 * \
+                    self.一类陶瓷电容环境系数[self.Enviroment_Type]
             step2 = self.一类陶瓷电容质量等级["A1P"] * \
                     self.容量系数
-            step3 = step1 * step2 * self.表面贴片封装系数["一类陶瓷电容_片式"]
+            step3 = step1 * step2 * self.package_coefficient["1st_Class_Ceramic_Chip_capacitors"]
 
             return  step3
-        elif self.电容类型 == "二类陶瓷电容":
-            step1 = self.二类陶瓷电容基本失效率[self.工作温度] / 1000000 * \
-                    self.二类陶瓷电容环境系数[self.环境类型]
+        elif self.Cap_Type == "二类陶瓷电容":
+            step1 = self.二类陶瓷电容基本失效率[self.Working_temprature] / 1000000 * \
+                    self.二类陶瓷电容环境系数[self.Enviroment_Type]
             step2 = self.二类陶瓷电容质量等级["A1P"] * \
                     self.容量系数
-            step3 = step1 * step2 * self.表面贴片封装系数["二类陶瓷电容_片式"]
+            step3 = step1 * step2 * self.package_coefficient["2nd_Class_Ceramic_Chip_capacitors"]
 
             return step3
-        elif self.电容类型 == "三类陶瓷电容":
-            step1 = self.三类陶瓷电容基本失效率[self.工作温度] / 1000000 * \
-                    self.三类陶瓷电容环境系数[self.环境类型]
+        elif self.Cap_Type == "三类陶瓷电容":
+            step1 = self.三类陶瓷电容基本失效率[self.Working_temprature] / 1000000 * \
+                    self.三类陶瓷电容环境系数[self.Enviroment_Type]
             step2 = self.三类陶瓷电容质量等级["A"] * \
                     self.容量系数
-            step3 = step1 * step2 * self.表面贴片封装系数["三类陶瓷电容_片式"]
+            step3 = step1 * step2 * self.package_coefficient["3rd_Class_Ceramic_Chip_capacitors"]
 
             return step3
 
-        elif self.电容类型 == "铝电解电容":
+        elif self.Cap_Type == "铝电解电容":
 
-            step1 = self.铝电解电容基本失效率[self.工作温度] / 1000000 * \
-                    self.铝电解电容环境系数[self.环境类型]
+            step1 = self.铝电解电容基本失效率[self.Working_temprature] / 1000000 * \
+                    self.铝电解电容环境系数[self.Enviroment_Type]
             step2 = self.铝电解电容质量等级["A1L"] * \
                     self.容量系数
-            step3 = step1 * step2 * self.表面贴片封装系数["铝电解电容_有引线"]
+            step3 = step1 * step2 * self.package_coefficient["Aluminum_capacitors_Chip"]
 
             return step3
         else:
-            print("请从新确认电容类型")
+            print("Pls confirm your capacitor's type")
 
     def __init__(self, 电容类型, 工作温度, 环境类型, 电容容量):
         self._解析电容类型(电容类型)
-        self.工作温度 = 工作温度
-        self.环境类型 = 环境类型
+        self.Working_temprature = 工作温度
+        self.Enviroment_Type = 环境类型
         self.__得到容量系数(电容容量)
-
-
-
-if __name__ == "__main__":
-
-   c = 电容可靠性模型 ("铝电解电容",0,"GB","470uF")
-   print(c.得到可靠性())
-   print(4.7 * 10**5)
